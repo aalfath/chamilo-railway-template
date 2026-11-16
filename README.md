@@ -1,3 +1,5 @@
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template/chamilo-1?utm_medium=integration&utm_source=button&utm_campaign=chamilo)
+
 # Chamilo LMS on Railway
 
 Railway template for [Chamilo LMS](https://chamilo.org), the open-source e-learning platform (courses, learning paths, SCORM, exercises, gradebook, certificates).
