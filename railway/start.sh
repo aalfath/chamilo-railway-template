@@ -60,7 +60,11 @@ if [ ! -f "$DATA/.env" ]; then
   log "first boot: installing Chamilo $CHAMILO_VERSION for $URL (admin user: $ADMIN_USER)"
 
   rm -f "$APP/.env"
-  as_www "cd $APP && APP_ENV=prod php -d max_execution_time=0 -d memory_limit=1024M -S 127.0.0.1:9100 -t public >/tmp/install-server.log 2>&1" &
+  # Answer Railway's health check while the installer runs (first boot only).
+  php -S "0.0.0.0:$PORT" /usr/local/bin/railway/setup-page.php >/dev/null 2>&1 &
+  SETUP=$!
+  (cd "$APP" && APP_ENV=prod exec setpriv --reuid=www-data --regid=www-data --init-groups \
+    php -d max_execution_time=0 -d memory_limit=1024M -S 127.0.0.1:9100 -t public >/tmp/install-server.log 2>&1) &
   SRV=$!
   i=0; until curl -s -o /dev/null http://127.0.0.1:9100/favicon.ico; do i=$((i+1)); [ $i -ge 30 ] && break; sleep 1; done
 
@@ -90,8 +94,8 @@ if [ ! -f "$DATA/.env" ]; then
     --data-urlencode "mailerDsn=${MAILER_DSN:-null://null}" \
     --data-urlencode "mailerFromEmail=${MAILER_FROM_EMAIL:-$ADMIN_EMAIL}" \
     --data-urlencode "mailerFromName=${MAILER_FROM_NAME:-Chamilo}" || echo 000)
-  kill "$SRV" 2>/dev/null || true
-  sleep 1
+  kill "$SRV" "$SETUP" 2>/dev/null || true
+  wait "$SRV" "$SETUP" 2>/dev/null || true
 
   if ! grep -q "^APP_INSTALLED='1'" "$APP/.env" 2>/dev/null || \
      ! php -r '$p=new PDO("mysql:host=".getenv("DATABASE_HOST").";port=".getenv("DATABASE_PORT").";dbname=".getenv("DATABASE_NAME"), getenv("DATABASE_USER"), getenv("DATABASE_PASSWORD")); $s=$p->prepare("SELECT COUNT(*) FROM user WHERE username=?"); $s->execute([$argv[1]]); exit($s->fetchColumn() > 0 ? 0 : 1);' "$ADMIN_USER" 2>/dev/null; then

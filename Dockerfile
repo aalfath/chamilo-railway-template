@@ -40,7 +40,7 @@ COPY --from=fetch --chown=www-data:www-data /src /var/www/chamilo
 COPY railway/apache-chamilo.conf /etc/apache2/sites-available/000-default.conf
 COPY railway/php-chamilo.ini /usr/local/etc/php/conf.d/zz-chamilo.ini
 COPY railway/healthz.php /var/www/railway-health/healthz.php
-COPY railway/start.sh railway/set-env.php /usr/local/bin/railway/
+COPY railway/start.sh railway/set-env.php railway/setup-page.php /usr/local/bin/railway/
 
 RUN set -eux; \
     a2enmod rewrite headers expires setenvif; \
