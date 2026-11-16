@@ -2,7 +2,7 @@
 // Railway health check: 200 only when Chamilo is installed and its database answers.
 header('Content-Type: text/plain');
 header('Cache-Control: no-store');
-$env = @file_get_contents(dirname(__DIR__).'/.env');
+$env = @file_get_contents('/var/www/chamilo/.env');
 $get = static function (string $k) use ($env): string {
     return preg_match('/^'.$k."='?([^'\\n]*)'?\$/m", (string) $env, $m) ? $m[1] : '';
 };

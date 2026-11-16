@@ -39,7 +39,7 @@ RUN set -eux; \
 COPY --from=fetch --chown=www-data:www-data /src /var/www/chamilo
 COPY railway/apache-chamilo.conf /etc/apache2/sites-available/000-default.conf
 COPY railway/php-chamilo.ini /usr/local/etc/php/conf.d/zz-chamilo.ini
-COPY --chown=www-data:www-data railway/healthz.php /var/www/chamilo/public/healthz.php
+COPY railway/healthz.php /var/www/railway-health/healthz.php
 COPY railway/start.sh railway/set-env.php /usr/local/bin/railway/
 
 RUN set -eux; \

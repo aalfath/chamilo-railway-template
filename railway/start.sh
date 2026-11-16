@@ -62,7 +62,7 @@ if [ ! -f "$DATA/.env" ]; then
   rm -f "$APP/.env"
   as_www "cd $APP && APP_ENV=prod php -d max_execution_time=0 -d memory_limit=1024M -S 127.0.0.1:9100 -t public >/tmp/install-server.log 2>&1" &
   SRV=$!
-  i=0; until curl -s -o /dev/null http://127.0.0.1:9100/healthz.php; do i=$((i+1)); [ $i -ge 30 ] && break; sleep 1; done
+  i=0; until curl -s -o /dev/null http://127.0.0.1:9100/favicon.ico; do i=$((i+1)); [ $i -ge 30 ] && break; sleep 1; done
 
   code=$(curl -sS --max-time 1200 -o /tmp/install.html -w '%{http_code}' -X POST \
     "http://127.0.0.1:9100/main/install/index.php?running=1&installType=new" \
